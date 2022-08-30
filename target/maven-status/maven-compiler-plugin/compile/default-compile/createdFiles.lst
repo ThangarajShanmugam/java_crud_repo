@@ -1,0 +1,6 @@
+crud\controller\crudController.class
+crud\service\crudService.class
+crud\ServletInitializer.class
+crud\ApiCrudApplication.class
+crud\dao\crudDao.class
+crud\model\crudModel.class
