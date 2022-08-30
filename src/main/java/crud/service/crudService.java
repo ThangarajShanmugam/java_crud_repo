@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import crud.dao.crudDao;
-import crud.model.crudModel;
 
 @Service
 public class crudService {
@@ -13,23 +12,15 @@ public class crudService {
 	@Autowired
 	crudDao dao;
 
-	public boolean insertRecord(crudModel model) {
+	public String insertRecord(String model) {
 
-		try {
-			return dao.insert(model);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+		System.out.println("---------------------------------Service");
+		return dao.insert(model);
 	}
 
-	public boolean updateRecord(int number, String username) {
-		try {
-			return dao.update(number, username);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public String updateRecord(String model) {
+		System.out.println(".................service........");
+		return dao.update(model);
 	}
 
 	public JSONObject displayRecord() {
@@ -42,13 +33,9 @@ public class crudService {
 
 	}
 
-	public boolean deleteRecord(String username) {
-		try {
-			return dao.delete(username);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return false;
-		}
+	public String deleteRecord(String userId) {
+		System.out.println("---------------------------------Service");
+		return dao.delete(userId);
 	}
 
 }
