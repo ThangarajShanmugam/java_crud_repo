@@ -1,64 +1,71 @@
 package crud.model;
 
-public class crudModel  {
-	private String username ;
-	private int number ;
-	private String userId;
-	private String email;
-	
-	public String getUserId() {
-		return userId;
+import org.json.simple.JSONArray;
+import org.springframework.http.HttpStatus;
+
+public class crudModel {
+	private String responseMessage;
+	private HttpStatus responseCode;
+	private int statusCode;
+	private String responseDescription;
+	private JSONArray data;
+	private Object jData;
+	private boolean validation;
+
+	public String getResponseMessage() {
+		return responseMessage;
 	}
 
-
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setResponseMessage(String responseMessage) {
+		this.responseMessage = responseMessage;
 	}
 
-
-	public String getEmail() {
-		return email;
+	public HttpStatus getResponseCode() {
+		return responseCode;
 	}
 
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-	
-	@Override
-	public String toString() {
-		return "crudModel [username=" + username + ", number=" + number + ", userId=" + userId + ", email=" + email
-				+ "]";
+	public void setResponseCode(HttpStatus responseCode) {
+		this.responseCode = responseCode;
 	}
 
-
-	public String getUsername() {
-		return username;
+	public int getStatusCode() {
+		return statusCode;
 	}
 
-	
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	
-	
-	public int getNumber() {
-		return number;
-	}
-	
-	
-	public void setNumber(int number) {
-		this.number = number;
+	public void setStatusCode(int statusCode) {
+		this.statusCode = statusCode;
 	}
 
-//	public crudModel() {
-//		super();
-//	}
-//
-//	public crudModel(String username, int number) {
-//		super();
-//		this.username = username;
-//		this.number = number;
-//	}
+	public String getResponseDescription() {
+		return responseDescription;
+	}
+
+	public void setResponseDescription(String responseDescription) {
+		this.responseDescription = responseDescription;
+	}
+
+	public JSONArray getData() {
+		return data;
+	}
+
+	public void setData(JSONArray data) {
+		this.data = data;
+	}
+
+	public Object getjData() {
+		return jData;
+	}
+
+	public void setjData(Object jData) {
+		this.jData = jData;
+	}
+
+	public boolean isValidation() {
+		return validation;
+	}
+
+	public void setValidation(boolean validation) {
+		this.validation = validation;
+	}
 
 }

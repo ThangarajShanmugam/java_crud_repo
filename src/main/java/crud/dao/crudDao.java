@@ -5,6 +5,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,82 +13,92 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class crudDao {
+
 	public final String url = "jdbc:postgresql://localhost:5432/crudDb", uName = "postgres", pass = "admin";
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unused")
 	public String insert(String model) {
-		
-		  System.out.println("-----------------------------DAO");
 
+		System.out.println("-----------------------------DAO");
+		System.out.println("text : " + model);
+		String result = "";
 
+		JSONParser jsonParser = new JSONParser();
+		JSONArray Array = new JSONArray();
+		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject2 = new JSONObject();
 
-	       System.out.println("text : " + model);
-	        String result = "";
+		try {
+			jsonObject = (JSONObject) jsonParser.parse(model);
+			System.out.println("jsonObject : " + jsonObject.get("userdetails"));
+			Array = (JSONArray) jsonParser.parse(jsonObject.get("userdetails").toString());
+			System.out.println("Array : " + Array.get(0));
+			for (int i = 0; i < Array.size(); i++) {
+				jsonObject2 = (JSONObject) jsonParser.parse(Array.get(i).toString());
 
+				System.out.println("username : " + jsonObject2.get("username"));
+				System.out.println("number : " + jsonObject2.get("number"));
+				System.out.println("email :" + jsonObject2.get("email"));
+				String valueMail = jsonObject2.get("email").toString();
+//				System.out.println(valueMail);
 
+//				if (sql != null && sql.contains("@gmail.com")) {
 
-	       JSONParser jsonParser = new JSONParser();
-	        JSONArray Array = new JSONArray();
-	        JSONObject jsonObject = new JSONObject();
-	        JSONObject jsonObject2 = new JSONObject();
+				try (Connection connection = DriverManager.getConnection(url, uName, pass);
+						Statement st = connection.createStatement();) {
+					String query = "select * from crud";
+					ResultSet rs = st.executeQuery(query);
+					while (rs.next()) {
+						String email = null;
+//							String email = rs.getString("email");
+						System.out.println("Email " + email);
+						System.out.println("Value Email " + valueMail);
+						if (email != null && email.equalsIgnoreCase(valueMail)) {
+							email = rs.getString("email");
+							System.out.println("Mail Already Exist!!");
+						} else {
+							String sql = "INSERT INTO crud(username,number,\"userId\",email)" + "VALUES('"
+									+ jsonObject2.get("username") + "', " + jsonObject2.get("number")
+									+ ",gen_random_uuid(),'" + jsonObject2.get("email") + "')";
+							System.out.println(sql);
+							try (Connection connection1 = DriverManager.getConnection(url, uName, pass);
+									PreparedStatement pst = connection1.prepareStatement(sql);) {
+								int count = pst.executeUpdate();
+								System.out.println(count);
 
+								if (count == 1) {
+									result = "inserted data";
+									System.out.println("success");
+								} else {
+									result = "not inserted data";
+									System.out.println("failure");
+								}
+							} catch (Exception e) {
+								e.printStackTrace();
+								return "connection error";
+							}
+						}
+					}
 
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 
-	       try {
-	            jsonObject = (JSONObject) jsonParser.parse(model);
-	            System.out.println("jsonObject : " + jsonObject.get("userdetails"));
-	            Array = (JSONArray) jsonParser.parse(jsonObject.get("userdetails").toString());
-	            System.out.println("Array : " + Array.get(0));
-	            for (int i = 0; i < Array.size(); i++) {
-	                jsonObject2 = (JSONObject) jsonParser.parse(Array.get(i).toString());
+//				}
+				System.out.println("Inserted records into the table...");
+				return result;
 
-
-
-	               System.out.println("username : " + jsonObject2.get("username"));
-	                System.out.println("number : " + jsonObject2.get("number"));
-	                System.out.println("email :"+jsonObject2.get("email"));
-	                String sql = "INSERT INTO crud(username,number,\"userId\",email)" + "VALUES('" + jsonObject2.get("username")
-	                        + "', " + jsonObject2.get("number") + ",gen_random_uuid(),'"+ jsonObject2.get("email") +"')";
-	                try (Connection connection = DriverManager.getConnection(url, uName, pass);
-	                        PreparedStatement pst = connection.prepareStatement(sql);) {
-	                    int count = pst.executeUpdate();
-	                    System.out.println(count);
-
-
-
-	                   if (count == 1) {
-	                        result = "inserted data";
-	                        System.out.println("success");
-	                    } else {
-	                        result = "not inserted data";
-	                        System.out.println("failure");
-	                    }
-
-
-
-	               } catch (Exception e) {
-	                    e.printStackTrace();
-	                    return "connection error";
-	                }
-	            }
-
-
-
-	           System.out.println("Inserted records into the table...");
-	            return result;
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	             return "Failure";
-	        }
-	        // return "success";
-
-
-
-	   }
-	
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "Failure";
+		}
+		// return "success";
+		return result;
+	}
 
 //		System.out.println("-----------------------------DAO");
-//
+
 //		System.out.println("text : " + model);
 //		String result = "";
 //
@@ -95,7 +106,11 @@ public class crudDao {
 //		JSONArray Array = new JSONArray();
 //		JSONObject jsonObject = new JSONObject();
 //		JSONObject jsonObject2 = new JSONObject();
-//		try {
+//	
+//		String sql = "INSERT INTO crud(username,number,\"userId\",email)" + "VALUES('" + jsonObject2.get("username")
+//		+ "', " + jsonObject2.get("number") + ",gen_random_uuid(),'" + jsonObject2.get("email") + "')";
+//		try(Connection connection = DriverManager.getConnection(url, uName, pass);
+//				PreparedStatement pst = connection.prepareStatement(sql);){
 //			jsonObject = (JSONObject) jsonParser.parse(model);
 //			System.out.println("jsonObject : " + jsonObject.get("userdetails"));
 //			Array = (JSONArray) jsonParser.parse(jsonObject.get("userdetails").toString());
@@ -106,10 +121,9 @@ public class crudDao {
 //				System.out.println("username : " + jsonObject2.get("username"));
 //				System.out.println("number : " + jsonObject2.get("number"));
 //				System.out.println("email :" + jsonObject2.get("email"));
-//			
-//			Array.add(jsonObject2);
-////			jsonObject.put("userdetails", Array);
-//
+
+//			jsonObject.put("userdetails", Array);
+
 //			String sql = "INSERT INTO crud(username,number,\"userId\",email)" + "VALUES('" + jsonObject2.get("username")
 //					+ "', " + jsonObject2.get("number") + ",gen_random_uuid(),'" + jsonObject2.get("email") + "')";
 //			try (Connection connection = DriverManager.getConnection(url, uName, pass);
@@ -127,19 +141,19 @@ public class crudDao {
 //
 //			} catch (Exception e) {
 //				e.printStackTrace();
-//				return "connection error";
+//				return connection error;
 //			}
 //			}
+//			Array.add(jsonObject2);
 //			System.out.println("Inserted records into the table...");
-//			return result;
+//			//return result;
 //		}catch (Exception e) {
 //			e.printStackTrace();
-//			return "fail";
+//			//return "fail";
 //		}
 //		// return jsonObject;
+//		return jsonObject2;
 //		
-//
-//
 //	}
 
 	public String update(String model) {
@@ -224,4 +238,24 @@ public class crudDao {
 		return "success";
 	}
 
+	public String validateRecord(String email) {
+		System.out.println("............dao");
+		String sql = "select email from crud1 where email = '" + email + "'";
+		String result;
+		System.out.println(sql);
+		try (Connection con = DriverManager.getConnection(url, uName, pass);
+				Statement stmt = con.createStatement();
+				ResultSet rs = stmt.executeQuery(sql);) {
+			if (rs.next()) {
+				result = "success";
+			} else {
+				result = "failure";
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "failure";
+		}
+		return result;
+	}
 }
