@@ -2,6 +2,8 @@ package crud.controller;
 
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import crud.model.crudModel;
 import crud.service.crudService;
 
 @RestController
@@ -28,36 +31,6 @@ public class crudController {
 		return service.insertRecord(model);
 
 	}
-
-//		public String insertController(@RequestBody String model ) throws ParseException {
-//			System.out.println("text : " + model);
-//			String result = "";
-//			 System.out.println("text : " + model);
-//	            JSONParser jsonParser = new JSONParser();
-//	            JSONArray Array=new JSONArray();
-//	            JSONObject jsonObject = new JSONObject();
-//	            JSONObject jsonObject2 = new JSONObject();
-//
-//	           JSONArray jsonArray=new JSONArray();
-//	            try {
-//	                 
-//	            	jsonObject = (JSONObject) jsonParser.parse(model);
-//	                System.out.println("jsonObject : " + jsonObject.get("userdetails"));
-//	                Array = (JSONArray) jsonParser.parse(jsonObject.get("userdetails").toString());
-//	                System.out.println("Array : " + Array.get(0));
-//	                jsonObject2 = (JSONObject) jsonParser.parse(Array.get(0).toString());
-//
-//	                System.out.println("username : " + jsonObject2.get("username"));
-//	                System.out.println("number : " + jsonObject2.get("number"));
-//	                jsonArray=service.insertRecord(jsonObject2);
-//	             
-//	               // return new ResponseEntity<>("Inserted",HttpStatus.OK);
-//	            } catch (Exception e) {
-//	            	e.printStackTrace();
-//	                //return new ResponseEntity<>("Something went wrong", HttpStatus.OK);
-//	            }
-//	            return "inserted";
-//	        }
 
 	@PutMapping("/update")
 	public String updateController(@RequestBody String model) {
@@ -90,6 +63,37 @@ public class crudController {
 		System.out.println("...............controller....." + userId);
 		service.deleteRecord(userId);
 		return "deleted";
+	}
+
+	@SuppressWarnings("unchecked")
+	@GetMapping("/insert/validate-email")
+	public ResponseEntity<crudModel> validateController(@RequestParam String email) {
+		crudModel model = new crudModel();
+		try {
+			JSONObject toRet = new JSONObject();
+			if (service.validateRecord(email).equalsIgnoreCase("success")) {
+				toRet.put("isAvailable", true);
+				model.setjData(toRet);
+				model.setResponseDescription("Email already exist in datatbase");
+				model.setResponseMessage("Email already exist in datatbase");
+				model.setResponseCode(HttpStatus.ALREADY_REPORTED);
+				model.setStatusCode(208);
+				model.setValidation(false);
+				return new ResponseEntity<crudModel>(model, HttpStatus.OK);
+			} else {
+				toRet.put("isAvailable", false);
+				model.setjData(toRet);
+				model.setResponseDescription("Successfully validated");
+				model.setResponseMessage("Successfully validated");
+				model.setResponseCode(HttpStatus.OK);
+				model.setStatusCode(200);
+				model.setValidation(true);
+				return new ResponseEntity<crudModel>(model, HttpStatus.OK);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<crudModel>(model, HttpStatus.EXPECTATION_FAILED);
+		}
 	}
 
 }

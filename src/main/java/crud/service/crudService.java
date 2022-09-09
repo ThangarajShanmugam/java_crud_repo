@@ -30,12 +30,16 @@ public class crudService {
 			e.printStackTrace();
 			return null;
 		}
-
 	}
 
 	public String deleteRecord(String userId) {
 		System.out.println("---------------------------------Service");
 		return dao.delete(userId);
+	}
+
+	public String validateRecord(String email) {
+		System.out.println(".........service");
+		return dao.validateRecord(email);
 	}
 
 }
